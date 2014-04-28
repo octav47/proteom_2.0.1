@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import support.SubFuntions;
 
@@ -391,7 +390,7 @@ public class Main {
     }
 
     private static void totalWeightedUniFrac() {
-        LinkedHashMap<Pair<String, String>, Double> pairDistance = new LinkedHashMap<>();
+        LinkedHashMap<PairP<String, String>, Double> pairDistance = new LinkedHashMap<>();
         String[] exps = dirReader("ProteomTreesNewicks");
         for (String si : exps) {
             for (String sj : exps) {
@@ -404,7 +403,7 @@ public class Main {
                             System.out.println("stop");
                         }
                         if (!Double.isNaN(WeightedUniFracCompare.result) && WeightedUniFracCompare.result != -1.0)
-                            pairDistance.put(new Pair<>(dsi, dsj), WeightedUniFracCompare.result);
+                            pairDistance.put(new PairP<>(dsi, dsj), WeightedUniFracCompare.result);
                     } catch (IOException e) {
                         System.out.println("-->can't make compare " + si + " " + sj);
                     }
@@ -414,7 +413,7 @@ public class Main {
         System.out.println("done!");
         try {
             PrintWriter pw = new PrintWriter("tmp20/out.5");
-            for (Map.Entry<Pair<String, String>, Double> entry : pairDistance.entrySet()) {
+            for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
             }
             pw.close();
@@ -433,7 +432,7 @@ public class Main {
     }
 
     private static void totalUnWeightedUniFrac() {
-        LinkedHashMap<Pair<String, String>, Double> pairDistance = new LinkedHashMap<>();
+        LinkedHashMap<PairP<String, String>, Double> pairDistance = new LinkedHashMap<>();
         String[] exps = dirReader("ProteomTreesNewicks");
         for (String si : exps) {
             for (String sj : exps) {
@@ -443,7 +442,7 @@ public class Main {
                         String dsj = sj.substring(0, sj.length() - 4);
                         UnWeightedUniFracCompare.main(new String[]{dsi, dsj});
                         if (UnWeightedUniFracCompare.result != -1) {
-                            pairDistance.put(new Pair<>(dsi, dsj), UnWeightedUniFracCompare.result);
+                            pairDistance.put(new PairP<>(dsi, dsj), UnWeightedUniFracCompare.result);
                         }
                     } catch (IOException e) {
                         System.out.println("-->can't make compare " + si + " " + sj);
@@ -454,7 +453,7 @@ public class Main {
         System.out.println("done!");
         try {
             PrintWriter pw = new PrintWriter("tmp20/out.5");
-            for (Map.Entry<Pair<String, String>, Double> entry : pairDistance.entrySet()) {
+            for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
             }
             pw.close();
@@ -488,18 +487,18 @@ public class Main {
                 break;
             case "all":
                 exp = "-1";
-                LinkedHashMap<Pair<String, String>, Double> pairDistance = new LinkedHashMap<>();
+                LinkedHashMap<PairP<String, String>, Double> pairDistance = new LinkedHashMap<>();
                 LinkedHashMap<String, String> exps = subfFillExps();
                 for (String e : exps.keySet()) {
                     try {
                         CompareGenomeProteom.main(new String[]{exps.get(e), e, type});
                         if (CompareGenomeProteom.result != -1) {
-                            pairDistance.put(new Pair<>(e, exps.get(e)), CompareGenomeProteom.result);
+                            pairDistance.put(new PairP<>(e, exps.get(e)), CompareGenomeProteom.result);
                         }
                         System.out.println("done!\nWriting to a file...");
                         try {
                             PrintWriter pw = new PrintWriter("tmp20/gpcompare.5");
-                            for (Map.Entry<Pair<String, String>, Double> entry : pairDistance.entrySet()) {
+                            for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
                             }
                             pw.close();

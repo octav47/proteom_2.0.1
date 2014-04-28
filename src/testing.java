@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.forester.io.parsers.PhylogenyParser;
 import org.forester.io.parsers.util.ParserUtils;
@@ -35,7 +34,29 @@ public class testing {
 //        remakeMDS();
 //        gen4som();
 //        buildUNFRAC();
-        getOSProperties();
+//        getOSProperties();
+        returnDirStruct();
+    }
+
+    private static void returnDirStruct() {
+        File root = new File("C:\\Users\\Kir\\IdeaProjects\\PhyBuilder\\");
+        File[] dirs = root.listFiles();
+        System.out.println(root.getAbsolutePath());
+        assert dirs != null;
+        recDirTmp(root, "");
+        System.out.println(root.getAbsolutePath());
+    }
+
+    private static void recDirTmp(File dir, String s) {
+        System.out.println(s + dir.getName());
+        File[] files = dir.listFiles();
+        if (files.length != 0) {
+            for (File f : files) {
+                if (f.isDirectory() && !f.getName().contains("$")) {
+                    recDirTmp(f, s + "  ");
+                }
+            }
+        }
     }
 
     private static void getOSProperties() {
@@ -47,11 +68,11 @@ public class testing {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
         PrintWriter pw = new PrintWriter("C:\\Users\\Kir\\Desktop\\1_new_allranks_weighted.txt");
         String curBf;
-        LinkedHashMap<Pair<String, String>, Double> result = new LinkedHashMap<>();
+        LinkedHashMap<PairP<String, String>, Double> result = new LinkedHashMap<>();
         while ((curBf = bufferedReader.readLine()) != null) {
             if (!curBf.contains("675") && !curBf.contains("693") && !curBf.contains("697")) {
                 String[] ch = curBf.split("\t");
-                Pair<String, String> pair = new Pair<>(ch[0], ch[1]);
+                PairP<String, String> pair = new PairP<>(ch[0], ch[1]);
                 result.put(pair, Double.parseDouble(ch[2]));
             }
         }
@@ -258,7 +279,7 @@ public class testing {
 
     private static void readGenusBG() throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("tmp20/genomBG.csv")));
-        LinkedHashMap<Pair<String, String>, Double> lhm = new LinkedHashMap<>();
+        LinkedHashMap<PairP<String, String>, Double> lhm = new LinkedHashMap<>();
         PrintWriter pw = new PrintWriter(new File("tmp20/_genomBG.txt"));
         String curBf = bufferedReader.readLine();
         String[] headers = curBf.split("\t");
@@ -270,13 +291,13 @@ public class testing {
 //            curBf = curBf.replace("\t", ";");
             for (int i = 1; i < currentSplit.length; i++) {
                 currentSplit[i] = currentSplit[i].replace(",", ".");
-                Pair<String, String> pair = new Pair<>(headers[i], curHeader);
+                PairP<String, String> pair = new PairP<>(headers[i], curHeader);
                 lhm.put(pair, Double.parseDouble(currentSplit[i]));
             }
         }
         //эксперимент -> HashMap <бактерия, double>
         LinkedHashMap<String, HashMap<String, Double>> exps = new LinkedHashMap<>();
-        for (Map.Entry<Pair<String, String>, Double> entry : lhm.entrySet()) {
+        for (Map.Entry<PairP<String, String>, Double> entry : lhm.entrySet()) {
             pw.println(entry.getKey().getKey() + "~" + entry.getKey().getValue() + "~" + entry.getValue());
             HashMap<String, Double> h;
             if (exps.containsKey(entry.getKey().getValue())) {
