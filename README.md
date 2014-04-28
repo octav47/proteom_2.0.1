@@ -1,4 +1,32 @@
 proteom_2.0.1
 =============
+PhyBuilder
+  dat
+  dat2
+  GenomTreesNewicks
+  GPcompare
+  lib
+    native
+  MDGenom
+  MDProteom
+  out
+    production
+      PhyBuilder
+        parsers
+        support
+  Overlay
+  ProteomTreesNewicks
+  resultCompare
+  src
+    parsers
+    support
+  tmp
+  tmp20
+  tmp30
+    ToDownload
+  tree
+  treeToCompare
+  _png
+  _pngOverlay
+  _tests
 
-proteom_2.0.1
