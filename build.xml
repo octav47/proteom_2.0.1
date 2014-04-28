@@ -1,0 +1,27 @@
+<project name="proteom">
+
+    <property name="srcDir" location="src"/>
+    <property name="outDir" location="out"/>
+    <property name="libDir" location="lib"/>
+
+    <path id="project.path">
+        <fileset dir="${libDir}" includes="*.jar"/>
+        <!-- fileset dir="C:\Program Files\Java\jdk1.7.0_51\jre\lib" includes="*.jar"/ -->
+    </path>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${outDir}"/>
+    </target>
+
+    <target name="clean" description="clean project">
+        <delete dir="${outDir}"/>
+    </target>
+
+    <target name="compile" description="compile source files" depends="init">
+        <javac srcdir="${srcDir}" destdir="${outDir}" classpathref="project.path" target="1.7" source="1.7"/>
+    </target>
+
+</project>
