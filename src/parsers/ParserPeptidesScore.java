@@ -1,6 +1,7 @@
 package parsers;
 
 import matrix_science.msparser.*;
+import support.Configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,11 +18,9 @@ public class ParserPeptidesScore {
     static {
         try {
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                File lib = new File("lib/native/msparserj.dll");
-                System.load(lib.getAbsolutePath());
+                System.load(Configuration.NATIVE_LIBS_PATH + "msparserj.dll");
             } else {
-                File lib = new File("lib/native/libmsparserj.so");
-                System.load(lib.getAbsolutePath());
+                System.load(Configuration.NATIVE_LIBS_PATH + "libmsparserj.so");
             }
         } catch (UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load. "

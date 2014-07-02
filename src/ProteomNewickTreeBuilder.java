@@ -2,6 +2,7 @@ import org.apache.commons.io.FileUtils;
 import parsers.ParserPeptidesAllRanks;
 import parsers.ParserPeptidesScore;
 import parsers.ParserUniquePeptides;
+import support.Configuration;
 
 import java.io.*;
 import java.util.*;
@@ -23,7 +24,7 @@ public class ProteomNewickTreeBuilder {
     //peptides -> protein[]
 //    private static TreeMap<String, String> pep2protList = new TreeMap<String, String>();
     //префикс для тестирования
-    private static String prefix = "";
+    final private static String prefix = Configuration.PATH;
     private static boolean test = false;
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -71,7 +72,7 @@ public class ProteomNewickTreeBuilder {
 //        }
         Logger.logStart();
         try {
-            FileUtils.forceDelete(new File("tmp20/parseProtPept.txt"));
+            FileUtils.forceDelete(new File(prefix+"tmp20\\parseProtPept.txt"));
         } catch (IOException ignored) {
         }
         if (test) {
@@ -89,7 +90,7 @@ public class ProteomNewickTreeBuilder {
 
 //        String fileName = "half_proteins.csv";
 //        if (prefix.length()<2) Parse.main(new String[]{});
-        String fileName = prefix + "tree/proteins_tree.csv";
+        String fileName = prefix + "tree\\proteins_tree.csv";
         //        String fileName = "input.txt";
 //        String fileName = "test/proteins_tree.csv";
         BufferedReader bf;
@@ -172,9 +173,9 @@ public class ProteomNewickTreeBuilder {
             String curLine;
             String curPath;
             if (onlyBuildScore) {
-                curPath = prefix + "tmp20/parseProtScore.txt";
+                curPath = prefix + "tmp20\\parseProtScore.txt";
             } else {
-                curPath = prefix + "tmp20/parseProtPept.txt";
+                curPath = prefix + "tmp20\\parseProtPept.txt";
             }
             bf = new BufferedReader(new InputStreamReader(new FileInputStream(curPath)));
             if (onlyBuildScore) {
@@ -197,9 +198,9 @@ public class ProteomNewickTreeBuilder {
         }
         try {
             if (test) {
-                newick(prefix + "output.txt", tree, false, false);
+                newick(prefix + "\\output.txt", tree, false, false);
             } else {
-                newick("ProteomTreesNewicks/" + command + ".txt", tree, false, onlyBuildScore);
+                newick(prefix+"ProteomTreesNewicks\\" + command + ".txt", tree, false, onlyBuildScore);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -230,7 +231,7 @@ public class ProteomNewickTreeBuilder {
     }
 
     private static void print(TreeMap<String, ArrayList<String>> a) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter("tmp/out.2");
+        PrintWriter pw = new PrintWriter(prefix+"\\tmp\\out.2");
         for (Map.Entry<String, ArrayList<String>> entry : a.entrySet()) {
             pw.println(entry.getKey());
             ArrayList<String> b = entry.getValue();

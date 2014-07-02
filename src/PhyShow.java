@@ -49,6 +49,10 @@ public class PhyShow {
                             treeFile = new File("ProteomTreesNewicks/" + args[0] + ".txt");
                             isPNGs = true;
                             break;
+                        case "-gpng":
+                            treeFile = new File("GenomTreesNewicks/" + args[0] + ".txt");
+                            isPNGs = true;
+                            break;
                         case "-pngtest":
                             treeFile = new File("_tests/png_test_without_nulls.txt");
                             isPNGs = true;

@@ -1,4 +1,6 @@
 import org.apache.commons.io.FileUtils;
+import support.Configuration;
+import support.HelpUtils;
 import support.SubFuntions;
 
 import java.io.*;
@@ -11,11 +13,17 @@ import java.util.Map;
 public class Main {
     private static PrintStream out = new PrintStream(System.out);
     final public static String absolutePath = "";
+    private static String prefixPath = "";
 
     public static void main(String[] args) throws IOException {
+        System.out.println(args[0]);
+        getConfiguration(args[0]);
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-
+        System.out.println("### ### ###\n" + Configuration.getHeader() + "\n### ### ###");
+        System.out.println("[help] type \"help\" for list of commands");
+        System.out.println("[log] waiting for a command");
         String inputCommand;
+        prefixPath = Configuration.PATH;
         while (true) {
             inputCommand = bf.readLine();
             String[] icSplit = inputCommand.split(" ");
@@ -65,14 +73,14 @@ public class Main {
             //region list
             if (icSplit.length > 1 && icSplit[0].equalsIgnoreCase("list")) {
                 if (icSplit[1].equalsIgnoreCase("built")) {
-                    String[] list = dirReader("ProteomTreesNewicks");
+                    String[] list = dirReader(prefixPath + "\\ProteomTreesNewicks");
                     for (int i = 0; i < list.length; i++) {
                         out.println(list[i].substring(0, list[i].length() - 4));
                     }
                     out.println("total = " + list.length);
                 } else {
                     if (icSplit[1].equalsIgnoreCase("data")) {
-                        String[] list = dirReader("MDProteom");
+                        String[] list = dirReader(prefixPath + "\\MDProteom");
                         for (int i = 0; i < list.length; i++) {
                             out.println(list[i]);
                         }
@@ -85,7 +93,7 @@ public class Main {
 
             //region print
             if (icSplit.length > 1 && icSplit[0].equalsIgnoreCase("print")) {
-                File[] resultDir = new File("ProteomTreesNewicks/").listFiles();
+                File[] resultDir = new File(prefixPath + "\\ProteomTreesNewicks\\").listFiles();
                 assert resultDir != null;
                 for (File f : resultDir) {
                     if (f.getName().contains(icSplit[1])) {
@@ -104,13 +112,30 @@ public class Main {
 
             //region arch
             if (icSplit.length > 1 && icSplit[0].equalsIgnoreCase("arch")) {
-                File[] resultDir = new File("ProteomTreesNewicks/").listFiles();
+                String type = "-1";
+                if (icSplit[1].equalsIgnoreCase("proteom")) {
+                    type = "\\ProteomTreesNewicks";
+                } else {
+                    if (icSplit[1].equalsIgnoreCase("genome")) {
+                        type = "\\GenomTreesNewicks";
+                    }
+                }
+                if (type.equalsIgnoreCase("-1")) {
+                    error();
+                    continue;
+                }
+                File[] resultDir = new File(prefixPath + type).listFiles();
                 assert resultDir != null;
                 for (File f : resultDir) {
-                    if (f.getName().contains(icSplit[1])) {
+                    String fName = f.getName();
+                    if (fName.contains(".txt") || fName.contains(".TXT")) {
+                        fName = fName.substring(0, fName.lastIndexOf("."));
+                    }
+                    if (fName.equalsIgnoreCase(icSplit[2])) {
                         PhyShow.main(new String[]{f.getAbsolutePath(), "-arch"});
                     }
                 }
+                continue;
             }
             //endregion
 
@@ -157,11 +182,6 @@ public class Main {
             }
             //endregion
 
-            if (icSplit.length == 1 && icSplit[0].equalsIgnoreCase("archTest")) {
-                excCommand();
-                continue;
-            }
-
             //region delete
             if (icSplit.length > 1 && icSplit[0].equalsIgnoreCase("delete")) {
                 switch (icSplit[1].toLowerCase()) {
@@ -192,13 +212,31 @@ public class Main {
             //region png
             if (icSplit.length > 1 && icSplit[0].equalsIgnoreCase("png")) {
                 png(icSplit);
+                continue;
             }
             //endregion
 
             //region overlay
             if (icSplit.length == 3 && icSplit[0].equalsIgnoreCase("overlay")) {
                 overlay(icSplit);
+                continue;
             }
+
+            if (icSplit[0].equalsIgnoreCase("help")) {
+                if (icSplit.length == 1) {
+                    HelpUtils.showGlobalHelp();
+                } else {
+                    if (icSplit.length == 2) {
+                        HelpUtils.Manual(icSplit[1]);
+                    } else {
+                        error();
+                    }
+                }
+                continue;
+            }
+
+            System.out.println("[help] unknown command");
+            System.out.println("[help] check \"help\"");
         }
     }
 
@@ -222,7 +260,7 @@ public class Main {
     private static void buildUnique(String[] icSplit) {
         if (icSplit[2].equalsIgnoreCase("all")) {
             try {
-                String[] exps = dirReader("MDProteom");
+                String[] exps = dirReader(prefixPath + "\\MDProteom");
                 for (String exp : exps) {
                     ProteomNewickTreeBuilder.main(new String[]{exp, "-onlyBuildUnique"});
                     RemakeTree.main(new String[]{exp, Boolean.toString(false)});
@@ -245,7 +283,7 @@ public class Main {
     private static void buildAllRanks(String[] icSplit) {
         if (icSplit[2].equalsIgnoreCase("all")) {
             try {
-                String[] exps = dirReader("MDProteom");
+                String[] exps = dirReader(prefixPath + "\\MDProteom");
                 for (String exp : exps) {
                     ProteomNewickTreeBuilder.main(new String[]{exp, "-onlyBuildAllRanks"});
                     RemakeTree.main(new String[]{exp, Boolean.toString(false)});
@@ -269,7 +307,7 @@ public class Main {
         if (icSplit[2].equalsIgnoreCase("all")) {
 
             try {
-                String[] exps = dirReader("MDProteom");
+                String[] exps = dirReader(prefixPath + "\\MDProteom");
                 for (String exp : exps) {
                     ProteomNewickTreeBuilder.main(new String[]{exp, "-onlyBuildScore"});
                     RemakeTree.main(new String[]{exp, Boolean.toString(false)});
@@ -319,7 +357,8 @@ public class Main {
                 for (String experiment : experiments) {
                     try {
                         GenomeNewickTreeBuilder.main(new String[]{experiment});
-                    } catch (FileNotFoundException e) {
+//                        RemakeTree.main(new String[]{exp, Boolean.toString(true)});
+                    } catch (IOException e) {
                         error();
                     }
                 }
@@ -331,7 +370,8 @@ public class Main {
         if (!exp.equals("-1")) {
             try {
                 GenomeNewickTreeBuilder.main(new String[]{exp});
-            } catch (FileNotFoundException e) {
+//                RemakeTree.main(new String[]{exp, Boolean.toString(true)});
+            } catch (IOException e) {
                 error();
             }
         }
@@ -340,7 +380,7 @@ public class Main {
     private static void showInfo(int experiment) {
         boolean isAvailable = false;
         boolean isBuilt = false;
-        String[] exps = dirReader("MDProteom");
+        String[] exps = dirReader(prefixPath + "\\MDProteom");
         for (String exp1 : exps) {
             if (exp1.equalsIgnoreCase(String.valueOf(experiment))) {
                 isAvailable = true;
@@ -348,7 +388,7 @@ public class Main {
             }
         }
         if (isAvailable) {
-            exps = dirReader("ProteomTreesNewicks");
+            exps = dirReader(prefixPath + "\\ProteomTreesNewicks");
             for (String exp : exps) {
                 if (exp.contains(String.valueOf(experiment))) {
                     isBuilt = true;
@@ -359,16 +399,6 @@ public class Main {
         System.out.println("experiment = " + experiment);
         System.out.println("isAvailable = " + isAvailable);
         System.out.println("isBuilt = " + isBuilt);
-        System.out.println("done!");
-    }
-
-    private static void excCommand() {
-        Runtime rt = Runtime.getRuntime();
-        try {
-            rt.exec(new String[]{"java", "-jar", "C:\\Users\\Kir\\IdeaProjects\\PhyBuilder\\lib\\forester_1028.jar", "C:\\Users\\Kir\\IdeaProjects\\PhyBuilder\\ProteomTreesNewicks\\674.txt"});
-        } catch (IOException ignored) {
-            error();
-        }
     }
 
     private static void compareDiff(String[] icSplit) {
@@ -391,7 +421,7 @@ public class Main {
 
     private static void totalWeightedUniFrac() {
         LinkedHashMap<PairP<String, String>, Double> pairDistance = new LinkedHashMap<>();
-        String[] exps = dirReader("ProteomTreesNewicks");
+        String[] exps = dirReader(prefixPath + "\\ProteomTreesNewicks");
         for (String si : exps) {
             for (String sj : exps) {
                 if (!si.equals(sj)) {
@@ -412,7 +442,7 @@ public class Main {
         }
         System.out.println("done!");
         try {
-            PrintWriter pw = new PrintWriter("tmp20/out.5");
+            PrintWriter pw = new PrintWriter(prefixPath + "\\tmp20\\out.5");
             for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
             }
@@ -433,7 +463,7 @@ public class Main {
 
     private static void totalUnWeightedUniFrac() {
         LinkedHashMap<PairP<String, String>, Double> pairDistance = new LinkedHashMap<>();
-        String[] exps = dirReader("ProteomTreesNewicks");
+        String[] exps = dirReader(prefixPath + "\\ProteomTreesNewicks");
         for (String si : exps) {
             for (String sj : exps) {
                 if (!si.equals(sj)) {
@@ -452,7 +482,7 @@ public class Main {
         }
         System.out.println("done!");
         try {
-            PrintWriter pw = new PrintWriter("tmp20/out.5");
+            PrintWriter pw = new PrintWriter(prefixPath + "\\tmp20\\out.5");
             for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
             }
@@ -497,7 +527,7 @@ public class Main {
                         }
                         System.out.println("done!\nWriting to a file...");
                         try {
-                            PrintWriter pw = new PrintWriter("tmp20/gpcompare.5");
+                            PrintWriter pw = new PrintWriter(prefixPath + "\\tmp20\\gpcompare.5");
                             for (Map.Entry<PairP<String, String>, Double> entry : pairDistance.entrySet()) {
                                 pw.println(entry.getKey().getKey() + "\t" + entry.getKey().getValue() + "\t" + entry.getValue());
                             }
@@ -534,25 +564,37 @@ public class Main {
     }
 
     private static void png(String[] icSplit) {
-        if (icSplit[1].equalsIgnoreCase("all")) {
-            String[] exps = dirReader("ProteomTreesNewicks");
-            for (String s : exps) {
-                try {
-                    if (s.contains(".txt")) s = s.replace(".txt", "");
-                    PhyShow.main(new String[]{s, "-png"});
-                } catch (Exception e) {
-                    System.out.println("can't make png for " + s);
+        switch (icSplit[1].toLowerCase()) {
+            case "all": {
+                String[] exps = dirReader(prefixPath + "\\ProteomTreesNewicks");
+                for (String s : exps) {
+                    try {
+                        if (s.contains(".txt")) s = s.replace(".txt", "");
+                        PhyShow.main(new String[]{s, "-png"});
+                    } catch (Exception e) {
+                        System.out.println("can't make png for " + s);
+                    }
                 }
+                break;
             }
-        } else {
-            if (icSplit[1].equalsIgnoreCase("test")) {
-                PhyShow.main(new String[]{"test", "-pngtest"});
-            } else {
+            case "current": {
                 try {
-                    PhyShow.main(new String[]{icSplit[1], "-png"});
+                    PhyShow.main(new String[]{icSplit[2], "-png"});
                 } catch (Exception e) {
                     error();
                 }
+                break;
+            }
+            case "genome": {
+                try {
+                    PhyShow.main(new String[]{icSplit[2], "-gpng"});
+                } catch (Exception e) {
+                    error();
+                }
+                break;
+            }
+            case "test": {
+                PhyShow.main(new String[]{"test", "-pngtest"});
             }
         }
         System.out.println("done!");
@@ -581,5 +623,49 @@ public class Main {
         a.put("689", "BD_ChK");
         a.put("695", "BD_ChK");
         return a;
+    }
+
+    public static void getConfiguration(String path) {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
+            String bfCur;
+            while ((bfCur = bufferedReader.readLine()) != null) {
+                String[] ch = bfCur.split("=");
+                switch (ch[0].toLowerCase()) {
+                    case "nativeslibs": {
+                        Configuration.NATIVE_LIBS_PATH = ch[1];
+                        break;
+                    }
+                    case "path": {
+                        Configuration.PATH = ch[1];
+                        File dirs = new File(ch[1]);
+                        for (File f : dirs.listFiles()) {
+                            switch (f.getName().toLowerCase()) {
+                                case "tree": {
+                                    Configuration.TREE_PATH = f.getAbsolutePath() + "\\";
+                                    break;
+                                }
+                                case "tmp": {
+                                    Configuration.TMP_PATH = f.getAbsolutePath() + "\\";
+                                    break;
+                                }
+                                case "tmp20": {
+                                    Configuration.TMP20_PATH = f.getAbsolutePath() + "\\";
+                                    break;
+                                }
+                                case "ProteomTreesNewicks": {
+                                    Configuration.PTNEWICKS_PATH = f.getAbsolutePath() + "\\";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("[err] Can't read main.conf!");
+        }
     }
 }

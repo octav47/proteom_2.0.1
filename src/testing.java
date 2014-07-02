@@ -32,10 +32,10 @@ public class testing {
 //        remakeEcoli();
 //        checkNullBranches();
 //        remakeMDS();
-//        gen4som();
+        gen4som();
 //        buildUNFRAC();
 //        getOSProperties();
-        returnDirStruct();
+//        returnDirStruct();
     }
 
     private static void returnDirStruct() {
@@ -172,27 +172,27 @@ public class testing {
     private static String projectPath = "MDProteom/";
 
     private static void downloadFiles() throws IOException {
-//        File dir = new File("tmp30/ToDownload");
-//        File[] dirArray = dir.listFiles();
+        File dir = new File("tmp30/ToDownload");
+        File[] dirArray = dir.listFiles();
 //        ArrayList<String> names = new ArrayList<>();
-//        for (File f : dirArray) {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream("tmp30/ToDownload/747.txt")));
-        String cs = bf.readLine();
-        int projectNumber = Integer.parseInt(cs);
-        projectPath += projectNumber;
-        FileUtils.forceMkdir(new File(projectPath));
-        while ((cs = bf.readLine()) != null) {
-            files2download.add(cs);
-        }
-        downloadFilesDirectly("\\\\kenny.ripcm.com\\data\\");
-        downloadFilesDirectly("\\\\cluster.ripcm.com\\kennyfs\\mascot_backup");
-        downloadFilesDirectly("\\\\cluster.ripcm.com\\kennyfs\\mascot_backup\\data2");
+        for (File f : dirArray) {
+            BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+            String cs = bf.readLine();
+            int projectNumber = Integer.parseInt(cs);
+            projectPath += projectNumber;
+            FileUtils.forceMkdir(new File(projectPath));
+            while ((cs = bf.readLine()) != null) {
+                files2download.add(cs);
+            }
+            downloadFilesDirectly("\\\\kenny.ripcm.com\\data\\");
+            downloadFilesDirectly("\\\\cluster.ripcm.com\\kennyfs\\mascot_backup");
+            downloadFilesDirectly("\\\\cluster.ripcm.com\\kennyfs\\mascot_backup\\data2");
 
-        checkDownloads();
-        isDownloaded.clear();
-        files2download.clear();
-        projectPath = "MDProteom/";
-//        }
+            checkDownloads();
+            isDownloaded.clear();
+            files2download.clear();
+            projectPath = "MDProteom/";
+        }
 
     }
 
@@ -417,23 +417,27 @@ public class testing {
     }
 
 
-    private static void gen4som() throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter("C:\\Users\\Kir\\Desktop\\1.txt");
-        int n = 3;
-        int m = 10000;
-        for (int i = 0; i < m; i++) {
-            Random r = new Random(System.nanoTime());
-            for (int j = 0; j < n; j++) {
-                double tmp = r.nextDouble();
-                if (i % 2 == 0) tmp *= 2;
-                if (i % 3 == 0) tmp *= 3;
-                if (i % 5 == 0) tmp *= 5;
-                if (i % 7 == 0) tmp *= 7;
-                pw.print(tmp + " ");
-            }
-            pw.println();
+    private static void gen4som() throws IOException {
+//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("tree/_genus.csv")));
+//        String curBf;
+//        while ((curBf = bufferedReader.readLine()) != null) {
+//            String[] ch = curBf.split(";");
+//            TreeSet<String> ts = new TreeSet<>();
+//            for (String s : ch) {
+//                if (!ts.contains(s)) {
+//                    ts.add(s);
+//                } else {
+//                    System.out.println(curBf);
+//                }
+//            }
+//        }
+        File treeFile = new File("GenomTreesNewicks/BD_D1.txt");
+        PhylogenyParser parser = ParserUtils.createParserDependingOnFileType(treeFile, true);
+        Phylogeny phy = PhylogenyMethods.readPhylogenies(parser, treeFile)[0];
+        for (PhylogenyNodeIterator it = phy.iteratorPostorder(); it.hasNext(); ) {
+            PhylogenyNode n = it.next();
+            System.out.println(n.getName());
         }
-        pw.close();
     }
 
 }

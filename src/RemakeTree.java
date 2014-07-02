@@ -43,9 +43,9 @@ public class RemakeTree {
                 List<PhylogenyNode> path = getPathToRoot(n, phy.getRoot());
                 for (PhylogenyNode node : path) {
                     specialNodes.add(node);
-                    System.out.print(node.toString() + " ");
+//                    System.out.print(node.toString() + " ");
                 }
-                System.out.println();
+//                System.out.println();
             }
         }
         dfs1(phy.getRoot(), specialNodes);
@@ -77,7 +77,7 @@ public class RemakeTree {
             boolean isCorrect = true;
             if (Double.isNaN(x) || Double.isInfinite(x)) {
                 isCorrect = false;
-                System.out.println("warning");
+//                System.out.println("warning");
                 x = node.getDistanceToParent() / node.getDescendants().size();
             }
             node.setDistanceToParent(0.0);
@@ -101,7 +101,7 @@ public class RemakeTree {
     }
 
     private static void dfs1(PhylogenyNode node, LinkedHashSet<PhylogenyNode> specialNodes) {
-        System.out.println("current node = " + node.toString());
+//        System.out.println("current node = " + node.toString());
         List<PhylogenyNode> list = node.getDescendants();
         if (list.size() != 0) {
             double sum = 0.0;
@@ -116,7 +116,7 @@ public class RemakeTree {
             boolean isCorrect = true;
             if (Double.isNaN(x) || Double.isInfinite(x)) {
                 isCorrect = false;
-                System.out.println("warning");
+//                System.out.println("warning");
                 x = node.getDistanceToParent() / node.getDescendants().size();
             }
             node.setDistanceToParent(0.0);
@@ -124,8 +124,7 @@ public class RemakeTree {
             for (PhylogenyNode n : list) {
                 if (n.getDistanceToParent() != 0 || specialNodes.contains(n)) {
                     double tmp = (isCorrect) ? n.getDistanceToParent() + x * n.getDistanceToParent() : x;
-                    if (Double.isNaN(tmp))
-                    {
+                    if (Double.isNaN(tmp)) {
                         System.out.println();
                     }
                     n.setDistanceToParent(tmp);

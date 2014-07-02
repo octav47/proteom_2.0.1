@@ -2,6 +2,7 @@ package parsers;
 
 import matrix_science.msparser.*;
 import org.apache.commons.io.FileUtils;
+import support.Configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,13 +18,12 @@ import java.util.Map;
  */
 public class ParserUniquePeptides {
     static {
+
         try {
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                File lib = new File("lib/native/msparserj.dll");
-                System.load(lib.getAbsolutePath());
+                System.load(Configuration.NATIVE_LIBS_PATH + "msparserj.dll");
             } else {
-                File lib = new File("lib/native/libmsparserj.so");
-                System.load(lib.getAbsolutePath());
+                System.load(Configuration.NATIVE_LIBS_PATH + "libmsparserj.so");
             }
         } catch (UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load. "
@@ -56,12 +56,12 @@ public class ParserUniquePeptides {
             }
             for (String file_t : files) {
                 ms_mascotresfile file = new ms_mascotresfile(filePrefix + file_t);
-                if (file.isValid()) {
-                    if (file.isMSMS()) {
-                        System.out.println("#started " + filePrefix + file_t + " at time = " + (System.nanoTime() - before) / 1000000000);
-                        showResults(file, 30000, 44);
-                    }
-                }
+//                if (file.isValid()) {
+//                if (file.isMSMS()) {
+                System.out.println("#started " + filePrefix + file_t + " at time = " + (System.nanoTime() - before) / 1000000000);
+                showResults(file, 30000, 44);
+//                }
+//                }
             }
 //            printLHM1("tmp20/peptidesToProteins.txt", peptides2proteins);
             LinkedHashMap<String, String> uniquePeptides2proteins = calcUniquePeptides(peptides2proteins);
